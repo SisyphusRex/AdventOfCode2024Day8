@@ -83,7 +83,7 @@ class Map:
             new_list = [location]
             self.antennas[location.antenna] = new_list
 
-    def find_antinodes_for_each_antenna(self):
+    def find_antinodes_for_each_antenna_part_1(self):
         """finds pairs and adds antinodes to location"""
         for key in self.antennas:
             locations_of_antenna = self.antennas.get(key)
@@ -130,3 +130,65 @@ class Map:
                 if location.antinode:
                     count += 1
         return count
+
+    def find_antinodes_for_each_antenna_part_2(self):
+        """finds pairs and adds antinodes to location"""
+        for key in self.antennas:
+            locations_of_antenna = self.antennas.get(key)
+            for location in locations_of_antenna:
+                for location2 in locations_of_antenna:
+                    if location.get_coords() != location2.get_coords():
+                        self.find_antinodes_and_assign_2(location, location2)
+
+    def find_antinodes_and_assign_2(
+        self, location1: Location, location2: Location
+    ) -> None:
+        """find antinode of two locations"""
+        first_antinodes = []
+        second_antinodes = []
+
+        diff_y = location2.y_index - location1.y_index
+        diff_x = location2.x_index - location1.x_index
+
+        first_count = 1
+        first_counting = True
+        while first_counting:
+            first_antinode_y = location1.y_index - (diff_y * first_count)
+            first_antinode_x = location1.x_index - (diff_x * first_count)
+            first_antinode_location = self.get_location(
+                first_antinode_x, first_antinode_y
+            )
+            if first_antinode_location:
+                first_antinodes.append(first_antinode_location)
+                first_count += 1
+            else:
+                first_counting = False
+
+        second_count = 1
+        second_counting = True
+        while second_counting:
+            second_antinode_y = location2.y_index + (diff_y * second_count)
+            second_antinode_x = location2.x_index + (diff_x * second_count)
+            second_antinode_location = self.get_location(
+                second_antinode_x, second_antinode_y
+            )
+            if second_antinode_location:
+                second_antinodes.append(second_antinode_location)
+                second_count += 1
+            else:
+                second_counting = False
+
+        for antinode_location in first_antinodes:
+            antinode_location.antinode = True
+        for antinode_location in second_antinodes:
+            antinode_location.antinode = True
+
+        self.get_non_singular_antenna_antinodes()
+
+    def get_non_singular_antenna_antinodes(self):
+        """assign antinodes to antenna locations that arent singular"""
+        for key in self.antennas:
+            locations_of_antenna = self.antennas.get(key)
+            if len(locations_of_antenna) > 1:
+                for location in locations_of_antenna:
+                    location.antinode = True

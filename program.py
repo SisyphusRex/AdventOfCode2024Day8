@@ -13,7 +13,7 @@ def main(*args):
     data_list = get_data("data.txt")
     my_map = Map(data_list)
     print(my_map)
-    my_map.find_antinodes_for_each_antenna()
+    my_map.find_antinodes_for_each_antenna_part_2()
     my_map.print_antinodes()
     print(my_map.count_antinodes())
 
