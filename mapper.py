@@ -20,6 +20,10 @@ class Map:
             else:
                 return "."
 
+        def get_coords(self):
+            """return x and y index"""
+            return self.x_index, self.y_index
+
         def evaluate_original_value(self, original_value: str) -> None:
             """takes the input string and assigns antenna"""
             if original_value != ".":
@@ -85,15 +89,15 @@ class Map:
             locations_of_antenna = self.antennas.get(key)
             for location in locations_of_antenna:
                 for location2 in locations_of_antenna:
-                    if location != location2:
+                    if location.get_coords() != location2.get_coords():
                         self.find_antinodes_and_assign(location, location2)
 
     def find_antinodes_and_assign(
         self, location1: Location, location2: Location
     ) -> None:
         """find antinode of two locations"""
-        diff_y = abs(location1.y_index - location2.y_index)
-        diff_x = abs(location1.x_index - location2.x_index)
+        diff_y = location2.y_index - location1.y_index
+        diff_x = location2.x_index - location1.x_index
         first_antinode_y = location1.y_index - diff_y
         first_antinode_x = location1.x_index - diff_x
         second_antinode_y = location2.y_index + diff_y
@@ -109,8 +113,20 @@ class Map:
 
     def get_location(self, x_index, y_index) -> Location:
         """gets location from indexes"""
-        try:
-            my_location = self.map[y_index][x_index]
-        except IndexError:
+        if y_index >= 0 and x_index >= 0:
+            try:
+                my_location = self.map[y_index][x_index]
+            except IndexError:
+                return None
+            return my_location
+        else:
             return None
-        return my_location
+
+    def count_antinodes(self) -> int:
+        """count antinodes in map"""
+        count = 0
+        for row in self.map:
+            for location in row:
+                if location.antinode:
+                    count += 1
+        return count
