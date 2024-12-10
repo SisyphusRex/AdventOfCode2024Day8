@@ -13,6 +13,8 @@ def main(*args):
     data_list = get_data("test_data.txt")
     my_map = Map(data_list)
     print(my_map)
+    my_map.find_antinodes_for_each_antenna()
+    my_map.print_antinodes()
 
 
 def get_data(filename):
